@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drinks</title>
+    <link rel="stylesheet" href="">
+</head>
+<style>
+    body{
+        background: wheat;
+    }
+    h1{
+        color: rgb(0, 0, 0);
+        text-align: center;
+    }
+    .add-drink{
+        justify-content: center ;
+        display: flex;
+        align-items: center;
+    }
+    .add-drink button{
+        text-align: center;
+        padding: 1rem 0.9rem 1rem 0.9rem;
+        border-radius: 5px;
+        background: rgb(255, 211, 129);
+        margin-bottom: 10px;
+        font-size: 18px;
+
+    }
+    .add-drink span{
+        font-size: 30px;
+        font-weight: 600;
+        margin-right: 6px;
+    }
+    .drinks-container{
+        background: wheat;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .drinks{
+        font-size: 1.3rem;
+        padding: 1rem;
+        background: rgb(255, 211, 129);
+        width: 75%;
+        height: 100%;
+        box-shadow: 2px 2px 10px rgb(175, 85, 0);
+    }
+    .drinks li{
+        display: flex;
+        justify-content: space-between;
+        background-color: rgb(143, 86, 11);
+        padding: 1rem;
+        list-style: none;
+        margin: 1rem;
+        color: rgb(255, 255, 255);
+    }
+    .drinks button{
+        padding: 1rem;
+        font-size: 15px;
+        font-weight: 600;
+        background: rgb(255, 211, 129);
+        border-radius: 4px;
+    }
+</style>
+<body>
+    <h1 class="heading">Drinks</h1>
+    <div class="add-drink">
+        <a href="http://localhost:8080/add-drink"><button><span>+</span>Add Drink</button></a>
+    </div>
+    <div class="drinks-container">
+        <div class="drinks">
+            <ul>
+                {% for drink in drinks %}
+                    <li>
+                        <div><strong>Name:</strong> {{ drink.name }}<br></div>
+                        <div><strong>Price:</strong> {{ drink.price }}<br></div>
+                        <div><a href="http://localhost:8080/drinks/{{drink.id}}"><button>View</button></a></div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

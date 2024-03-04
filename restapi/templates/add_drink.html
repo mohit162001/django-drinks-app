@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Drink</title>
+  </head>
+  <style>
+    body {
+      background: wheat;
+    }
+    .container {
+      margin-top: 10%;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .drinks-form {
+        align-items: center;
+        width: 25%;
+      background: rgb(255, 198, 123);
+      font-size: 2.5rem;
+      margin: 1rem;
+      padding: 2rem;
+    }
+    .drinks-form h2{
+        font-size: 35px;
+    }
+    .actions{
+        margin-top: 10px;
+    }
+    .actions button {
+      padding: 1rem;
+      font-size: 20px;
+      background: rgb(143, 86, 11);
+      color: white;
+      font-weight: 600;
+    }
+    input{
+        width: 96%;
+        outline: none;
+        border: none;
+        margin-top: 10px;
+        margin-right: 25px;
+        display: block;
+        padding: 0.6rem;
+        font-size: 1.2rem;
+        resize: none;
+    }
+    label{
+        font-size: 1.5rem;
+    }
+  </style>
+  <body>
+    <div class="container">
+        <!-- <h1>Create Drink</h1> -->
+      <div class="drinks-form">
+     <h2>Add a new Drink</h2>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{form}}
+
+          <div class="actions">
+            <button type="submit">Add</button>
+            <a href="http://localhost:8080/drinks"><button type="button">cancle</button></a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
