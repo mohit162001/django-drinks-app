@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from restapi.forms import DrinkForm
 from restapi.models import DrinkModel
@@ -7,18 +7,58 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class Drinks_view(APIView):
+class SignUp_view(APIView):
+    def get(self,request):
+        return render(request,'signup.html')
+    
+    def post(self,request):
+        username = request.POST['username']
+        email = request.POST['email']
+        password = request.POST['password']
+        trimed_username = username.strip()
+        
+        if not (username and email and password):
+            return HttpResponse("fill all fields")
+        
+        user = User.objects.create_user(username=username, email=email, password=password)
+        user.save()
+        return redirect('/')
+    
+
+
+class Login_view(APIView):
+    def get(self,request):
+        return render(request,'login.html')
+
+    def post(self,request):
+        username = request.POST['username']
+        password = request.POST['password']
+        print(username,password)
+        user = authenticate(request,username=username,password=password)
+        if user is not None:
+            login(request,user)
+            return redirect('drinks')
+        else:
+            return HttpResponse("something went wrong...!\n Unable to login")
+
+def logoutAction(request):
+    logout(request)
+    return redirect('/')
+
+class Drinks_view(LoginRequiredMixin,APIView):
+    login_url = '/'
     def get(self, request):
         drinks = DrinkModel.objects.all()
         serializer = DrinkSerializer(drinks, many=True)
         return render(request,'drinks.html',{"drinks":serializer.data})
 
-
-class Drink_create(APIView):
- 
-    permission_classes = [IsAuthenticated]
+class Drink_create(LoginRequiredMixin,APIView):
+    login_url = '/'
     def get(self,request):
         form = DrinkForm()
         return render(request,'add_drink.html',{"form":form})
@@ -30,8 +70,8 @@ class Drink_create(APIView):
             return redirect("http://localhost:8080/drinks")
         
            
-
-class Drink_details(APIView):
+class Drink_details(LoginRequiredMixin,APIView):
+    login_url = '/'
     def get_drink(self, id):
         try:
             return DrinkModel.objects.get(id=id)
