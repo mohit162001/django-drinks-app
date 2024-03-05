@@ -96,11 +96,13 @@ class Drink_details(LoginRequiredMixin,APIView):
         else:
             return Response({"error":"soemthing went wrong"})
         
-    def delete(self,request,id):
-        drink = self.get_drink(id)
-        if drink is not None:
-            drink.delete()
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response({"error":"Cant not delete"},status=status.HTTP_400_BAD_REQUEST)
+def Drink_delelte(request,id):
+    drink = DrinkModel.objects.get(pk=id)
+    if drink is not None:
+        drink.delete()
+        return redirect('drinks')
+    else:
+        return Response({"error":"Cant not delete"},status=status.HTTP_400_BAD_REQUEST)
+    
+
 
