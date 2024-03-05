@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-3+l9)^6h1x-l16@*9iy1d2(ej8ba%yq2d$4@8ypvqz9k0ch$g8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost','127.0.0.1']
 
@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'restapi',
     'rest_framework',
+    'rest_framework_simplejwt',
+    "graphene_django"
 ]
 
 MIDDLEWARE = [
@@ -71,6 +73,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'drinks.wsgi.application'
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -128,3 +136,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+GRAPHENE = {
+    "SCHEMA": "restapi.schema.schema"
+}

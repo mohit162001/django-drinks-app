@@ -7,5 +7,5 @@ class DrinkModel(models.Model):
     price = models.FloatField(max_length = 100)
 
     def __str__(self):
-        return self.name
+        return self.name 
     
