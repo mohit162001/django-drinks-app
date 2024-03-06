@@ -5,4 +5,4 @@ from restapi.models import DrinkModel
 class DrinkSerializer(serializers.ModelSerializer):
     class Meta:
         model = DrinkModel
-        fields = ['id','name','desc','price']
+        fields = ['id','name','desc','price','category']
