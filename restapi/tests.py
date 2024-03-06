@@ -38,21 +38,4 @@ class TestDrinkQuery(GraphQLTestCase):
         print("---------------------------------------",res.json())
         self.assertEqual(expected,res.json())
         
-#         class DrinkMutation(graphene.Mutation):
-#     class Arguments:
-#         name = graphene.String(required=True)
-#         desc = graphene.String(required = True)
-#         price = graphene.Float(required=True)
-#         id = graphene.ID()
-#     drink = graphene.Field(DrinkType)
-    
-#     @classmethod
-#     def mutate(cls,root,info,id,name,desc,price):
-#         drink = DrinkModel.objects.get(id=id)
-#         drink.name = name
-#         drink.desc = desc
-#         drink.price = price
-#         return DrinkMutation(drink=drink)
-
-# class Mutation(graphene.ObjectType):
-#     update_drink = DrinkMutation.Field()
+        
