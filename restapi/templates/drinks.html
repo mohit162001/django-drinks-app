@@ -57,6 +57,7 @@
         padding: 1rem;
         list-style: none;
         margin: 1rem;
+        margin-left: -1rem;
         color: rgb(255, 255, 255);
     }
     .drinks button{
@@ -87,7 +88,7 @@
         <div class="drinks">
             <ul>
                 {% for drink in drinks %}
-                    <li>
+                    <li class="list">
                         <div><strong>Name:</strong> {{ drink.name }}<br></div>
                         <div><strong>Price:</strong> {{ drink.price }}<br></div>
                         <div><a href="http://localhost:8080/drinks/{{drink.id}}"><button>View</button></a></div>
