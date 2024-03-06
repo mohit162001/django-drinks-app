@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from restapi.forms import DrinkForm
-from restapi.models import DrinkModel
+from restapi.models import CategoryModel, DrinkModel
 from restapi.serializers import DrinkSerializer
 from rest_framework import status
 from rest_framework.response import Response
@@ -20,7 +20,6 @@ class SignUp_view(APIView):
         username = request.POST['username']
         email = request.POST['email']
         password = request.POST['password']
-        trimed_username = username.strip()
         
         if not (username and email and password):
             return HttpResponse("fill all fields")
@@ -60,8 +59,8 @@ class Drinks_view(LoginRequiredMixin,APIView):
 class Drink_create(LoginRequiredMixin,APIView):
     login_url = '/'
     def get(self,request):
-        form = DrinkForm()
-        return render(request,'add_drink.html',{"form":form})
+        categories = CategoryModel.objects.all()
+        return render(request,'add_drink.html',{"categories":categories})
     
     def post(self, request):
         serializer = DrinkSerializer(data=request.data)
@@ -81,8 +80,7 @@ class Drink_details(LoginRequiredMixin,APIView):
     def get(self, request, id):
         drink = self.get_drink(id)
         if drink is not None:
-            serializer = DrinkSerializer(drink)
-            return render(request,'drink_details.html',{"drink":serializer.data})
+            return render(request,'drink_details.html',{"drink":drink})
         else:
             return Response({"error":"soemthing went wrong"})
         
