@@ -10,13 +10,13 @@
         background: wheat;
     }
     .container{
-        margin-top: 10%;
-
+        margin-top: 5%;
         display: flex;
         justify-content: center;
         align-items: center;
     }
     .drinks-details{
+        width:40%;
         background: rgb(255, 198, 123);
         font-size: 2.5rem;
         margin: 1rem;
@@ -29,14 +29,21 @@
         color: white;
         font-weight: 600;
     }
+    hr{
+        color: #000;
+        height: 5px;
+        background: black;
+    }
 </style>
 <body>
     <div class="container">
         <div class="drinks-details">
             <div class="drinks-info">
                 <h1>{{drink.name}}</h1>
+                <hr>
                 <p>{{drink.desc}}</p>
                 <p>Cost: {{drink.price}}</p>
+                <p>Category: {{drink.category}}</p>
             </div>
             <div class="actions">
                 <a href="{%url 'drinks'%}"><button>Back</button></a>
