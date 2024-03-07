@@ -1,5 +1,4 @@
 import graphene
-from graphene import ObjectType
 from graphene_django import DjangoObjectType
 from .models import CategoryModel, DrinkModel
 
@@ -13,23 +12,85 @@ class CategoryType(DjangoObjectType):
         model = CategoryModel
         fields = '__all__'
 
-class Query(ObjectType):
-    
+class Query(graphene.ObjectType):
     drinks = graphene.List(DrinkType)
     def resolve_drinks(root,info):
+        print(info.context)
+        print(root)
         return DrinkModel.objects.all()
+    
     
     drink = graphene.Field(DrinkType,id=graphene.String())
     def resolve_drink(root,info,id):
         return DrinkModel.objects.get(id=id)
     
+    
     categories = graphene.List(CategoryType)
     def resolve_categories(root,info):
+        print(info.operation)
+        print(root)
         return CategoryModel.objects.all()
+    
     
     category = graphene.Field(CategoryType,id=graphene.String())
     def resolve_category(root,info,id):
         return CategoryModel.objects.get(id=id)
+      
+
+class DrinkCreate(graphene.Mutation):
+    class Arguments:
+        name = graphene.String(required=True)
+        price = graphene.Float(required=True)
+        desc = graphene.String(required=True)
+        category_id = graphene.String(required=True)
     
- 
-schema = graphene.Schema(query=Query)
+    drink = graphene.Field(DrinkType)
+    
+    @classmethod
+    def mutate(cls,root,info,name,desc,price,category_id):
+        category = CategoryModel.objects.get(id=category_id)
+        drink = DrinkModel.objects.create(name=name,desc=desc,price=price,category=category)
+        drink.save()
+        return DrinkCreate(drink)
+
+
+class DrinkUpdate(graphene.Mutation):
+    class Arguments:
+        name = graphene.String(required=True)
+        desc = graphene.String(required = True)
+        price = graphene.Float(required=True)
+        id = graphene.ID()
+        
+    drink = graphene.Field(DrinkType)
+
+    @classmethod
+    def mutate(cls,root,info,id,name,desc,price):
+        drink = DrinkModel.objects.get(id=id)
+        drink.name = name
+        drink.desc = desc
+        drink.price = price
+        drink.save()
+        return DrinkUpdate(drink)
+    
+    
+class DrinkDelete(graphene.Mutation):
+    class Arguments:
+        id = graphene.String(required = True)
+        
+    message = graphene.String()
+    
+    @classmethod
+    def mutate(cls,root,info,id):
+   
+        drink = DrinkModel.objects.get(id=id)
+        drink.delete()
+        return DrinkDelete(message = "Drink delelted successfully")
+    
+    
+class Mutation(graphene.ObjectType):
+    update_drink = DrinkUpdate.Field()
+    create_drink = DrinkCreate.Field()
+    delete_drink = DrinkDelete.Field()
+    
+        
+schema = graphene.Schema(query=Query,mutation=Mutation)
