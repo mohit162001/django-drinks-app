@@ -15,8 +15,6 @@ class CategoryType(DjangoObjectType):
 class Query(graphene.ObjectType):
     drinks = graphene.List(DrinkType)
     def resolve_drinks(root,info):
-        print(info.context)
-        print(root)
         return DrinkModel.objects.all()
     
     
@@ -56,10 +54,10 @@ class DrinkCreate(graphene.Mutation):
 
 class DrinkUpdate(graphene.Mutation):
     class Arguments:
-        name = graphene.String(required=True)
-        desc = graphene.String(required = True)
-        price = graphene.Float(required=True)
-        id = graphene.ID()
+        name = graphene.String()
+        desc = graphene.String()
+        price = graphene.Float()
+        id = graphene.ID(required=True)
         
     drink = graphene.Field(DrinkType)
 
