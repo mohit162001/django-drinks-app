@@ -26,8 +26,9 @@
     .actions button{
         padding: 1rem;
         font-size: 20px;
-        background:rgb(143, 86, 11); ;
-        color: white;
+        background:rgb(250, 155, 31) ;
+        border: none;
+        color: rgb(39, 39, 39);
         font-weight: 600;
     }
     h1{
@@ -51,9 +52,17 @@
             </div>
             <div class="actions">
                 <a href="{%url 'drinks'%}"><button>Back</button></a>
-                <a href="http://localhost:8080/delete/{{drink.id}}"><button>Delete</button></a>
+                <button onclick="deleteDrink()">Delete</button>
             </div>
         </div>
     </div>
+    <script>
+        function deleteDrink(){
+            if (window.confirm('Do you really want to delete {{drink.name}}'))
+                {
+                    window.location =  "http://localhost:8080/delete/{{drink.id}}"
+                }
+        }
+    </script>
 </body>
 </html>
