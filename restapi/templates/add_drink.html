@@ -78,10 +78,9 @@
             <label for="">Category</label>
             <select name="category" id="" >
               <option value="null">--select--</option>
-              <option value="1">juice</option>
-              <option value="2">cold drink</option>
-              <option value="3">milk based</option>
-              <option value="4">hard drink</option>
+              {% for category in categories %}
+                <option value="{{category.id}}">{{category}}</option>
+              {%endfor%}
             </select>            
           <div class="actions">
             <button type="submit">Add</button>
