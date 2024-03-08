@@ -12,8 +12,9 @@
     }
     h1{
         margin-top: -2rem;
-        color: rgb(0, 0, 0);
+        color: rgb(56, 56, 56);
         text-align: center;
+        font-size: 3rem;
     }
     .add-drink{
         justify-content: center ;
@@ -25,7 +26,7 @@
         padding: 1rem 0.9rem 1rem 0.9rem;
         border-radius: 5px;
         background: rgb(255, 211, 129);
-        margin-bottom: 10px;
+        margin-bottom: 25px;
         font-size: 18px;
 
     }
@@ -44,20 +45,23 @@
     }
     .drinks{
 
-        background: rgb(255, 211, 129);
+        background: rgb(255, 226, 171);
         width: 75%;
         height: 100%;
-        box-shadow: 2px 2px 10px rgb(175, 85, 0);
+        box-shadow: 2px 2px 10px #af5500;
     }
     .drinks li{
         display: flex;
         justify-content: space-between;
-        background-color: rgb(143, 86, 11);
+        background-color: rgb(247, 175, 81);
         padding: 1rem;
+        border: 5px #af550098 solid;
         list-style: none;
+        font-size: 20px;
+     
         margin: 1rem;
         margin-left: -1rem;
-        color: rgb(255, 255, 255);
+        color: rgb(0, 0, 0);
     }
     .drinks button{
         padding: 1rem;
@@ -67,10 +71,13 @@
         border-radius: 4px;
     }
     .logout{
+        
         display: flex;
         justify-content:flex-end;
     }
     .logout button{
+        margin-top: 0.3rem;
+        margin-bottom: -1rem;
         padding: 0.7rem;
         font-size: 25px;
         background: rgb(143, 86, 11);
@@ -79,10 +86,20 @@
     .list{
         text-transform:capitalize;
     }
+    .header{
+        margin-top: -0.6rem;
+        margin-left: -0.5rem;
+        margin-right: -0.5rem;
+        background: rgb(247, 175, 81);
+        padding-top: 0.5rem;
+        box-shadow: 2px 2px 2px rgb(182, 103, 0);
+    }
 </style>
 <body>
-    <div class="logout"><a href="{% url 'logout' %}"><button>logout</button></a></div>
+    <div class="header">
+        <div class="logout"><a href="{% url 'logout' %}"><button>logout</button></a></div>
     <h1 >Drinks</h1>
+    </div>
     <div class="add-drink">
         <a href="{% url 'add-drink' %}"><button><span>+</span>Add Drink</button></a>
     </div>
