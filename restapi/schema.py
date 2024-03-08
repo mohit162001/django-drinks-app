@@ -17,7 +17,40 @@ class Query(graphene.ObjectType):
     def resolve_drinks(root,info):
         return DrinkModel.objects.all()
     
+    # filter_drinks_by_desc = graphene.List(DrinkType,search = graphene.String())
+    # def resolve_filter_drinks_by_desc(root,info,search):        
+    #     return DrinkModel.objects.filter(desc__icontains = search)
     
+    
+    # filter_drinks_by_name = graphene.List(DrinkType,name = graphene.String())
+    # def resolve_filter_drinks_by_name(root,info,name):        
+    #     return DrinkModel.objects.filter(name__istartswith = name)
+    
+    
+    # filter_drinks_by_price = graphene.List(DrinkType,price = graphene.Float())
+    # def resolve_filter_drinks_by_price(root,info,price): 
+    #     return DrinkModel.objects.filter(price__exact = price)
+    
+    # filter_drink = graphene.List(DrinkType,name=graphene.String(),desc=graphene.String(),price=graphene.Float())
+    # def resolve_filter_drink(root,info,name=None,desc=None,price=None):
+    #     if name or desc or price:
+
+    #         return DrinkModel.objects.filter(desc__icontains = desc) | DrinkModel.objects.filter(name__istartswith = name) |DrinkModel.objects.filter(price__exact = price)
+    
+    filter_drink = graphene.List(DrinkType, name=graphene.String(), desc=graphene.String(), price=graphene.Float())
+
+    def resolve_filter_drink(root, info, name=None, desc=None, price=None):
+        drinks = DrinkModel.objects.all()
+
+        if name:
+            drinks = drinks.filter(name__istartswith=name)
+        if desc:
+            drinks = drinks.filter(desc__icontains=desc)
+        if price is not None:
+            drinks = drinks.filter(price=price)
+
+        return drinks
+
     drink = graphene.Field(DrinkType,id=graphene.String())
     def resolve_drink(root,info,id):
         return DrinkModel.objects.get(id=id)
@@ -62,13 +95,16 @@ class DrinkUpdate(graphene.Mutation):
     drink = graphene.Field(DrinkType)
 
     @classmethod
-    def mutate(cls,root,info,id,name,desc,price):
-        drink = DrinkModel.objects.get(id=id)
-        drink.name = name
-        drink.desc = desc
-        drink.price = price
-        drink.save()
-        return DrinkUpdate(drink)
+    def mutate(cls,root,info,id,name=None,desc=None,price=None):
+        if name is not None:
+            DrinkModel.objects.filter(id=id).update(name=name)
+        if price is not None:
+            DrinkModel.objects.filter(id=id).update(price=price)
+        if desc is not None:
+            DrinkModel.objects.filter(id=id).update(desc=desc)
+            
+        update_drink = DrinkModel.objects.get(id=id)
+        return DrinkUpdate(update_drink)
     
     
 class DrinkDelete(graphene.Mutation):
