@@ -55,6 +55,7 @@ class Drinks_view(LoginRequiredMixin,APIView):
         drinks = DrinkModel.objects.all()
         serializer = DrinkSerializer(drinks, many=True)
         return render(request,'drinks.html',{"drinks":serializer.data})
+        # return Response(serializer.data)
 
 class Drink_create(LoginRequiredMixin,APIView):
     login_url = '/'
