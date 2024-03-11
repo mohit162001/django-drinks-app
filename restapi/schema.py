@@ -50,9 +50,9 @@ class Query(graphene.ObjectType):
 
     #         return DrinkModel.objects.filter(desc__icontains = desc) | DrinkModel.objects.filter(name__istartswith = name) |DrinkModel.objects.filter(price__exact = price)
     
-    filter_drink = graphene.List(DrinkType, name=graphene.String(), desc=graphene.String(), price=graphene.Float())
+    filter_drink = graphene.List(DrinkType, name=graphene.String(), desc=graphene.String(), price=graphene.Float(),category = graphene.Int())
 
-    def resolve_filter_drink(root, info, name=None, desc=None, price=None):
+    def resolve_filter_drink(root, info, name=None, desc=None, price=None,category=None):
         drinks = DrinkModel.objects.all()
         user = info.context.user
         if not user.is_authenticated:
@@ -63,6 +63,8 @@ class Query(graphene.ObjectType):
             drinks = drinks.filter(desc__icontains=desc)
         if price is not None:
             drinks = drinks.filter(price=price)
+        if category is not None:
+            drinks = drinks.filter(category=category)
 
         return drinks
 
@@ -152,7 +154,7 @@ class DrinkDelete(graphene.Mutation):
     
     @classmethod
     def mutate(cls,root,info,id):
-   
+        
         drink = DrinkModel.objects.get(id=id)
         drink.delete()
         return DrinkDelete(message = "Drink delelted successfully")
