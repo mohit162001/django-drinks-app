@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'restapi',
     'rest_framework',
     'rest_framework_simplejwt',
-    "graphene_django"
+    "graphene_django",
+    "django_filters"
 ]
 
 MIDDLEWARE = [

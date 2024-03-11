@@ -1,17 +1,34 @@
 import graphene
+from graphene import relay
 from graphene_django import DjangoObjectType
 from .models import CategoryModel, DrinkModel
 from django.contrib.auth import get_user_model
 from graphene_django import DjangoObjectType
 import graphql_jwt
 from graphql_jwt.decorators import login_required
-
+from graphene_django.filter import DjangoFilterConnectionField
+import django_filters
 
 class DrinkType(DjangoObjectType):
     class Meta:
         model = DrinkModel
         fields = '__all__'
-
+        filter_fields = {
+            'name': ['exact', 'icontains', 'istartswith'],
+            'desc': ['exact', 'icontains', 'istartswith'],
+            'price':['exact']
+        }
+        interfaces = (relay.Node,)
+        
+# class DrinkFilter(django_filters.FilterSet):
+#     class Meta:
+#         model = DrinkModel
+#         fields = {
+#             'name': ['exact', 'icontains', 'istartswith'],
+#             'desc': ['exact', 'icontains', 'istartswith'],
+#             'price':['exact']
+#         }
+        
 class CategoryType(DjangoObjectType):
     class Meta:
         model = CategoryModel
@@ -23,56 +40,40 @@ class UserType(DjangoObjectType):
         
         
 class Query(graphene.ObjectType):
-    drinks = graphene.List(DrinkType,)
-    def resolve_drinks(root,info):
+    
+    drinks = DjangoFilterConnectionField(DrinkType)
+
+    def resolve_drinks(root, info, **kwargs):
+        print(kwargs)
         user = info.context.user
         if not user.is_authenticated:
-            raise Exception("Authentication credentials were not provided")
+            raise Exception("User is not Authenticated")
+
         return DrinkModel.objects.all()
     
-    # filter_drinks_by_desc = graphene.List(DrinkType,search = graphene.String())
-    # def resolve_filter_drinks_by_desc(root,info,search):        
-    #     return DrinkModel.objects.filter(desc__icontains = search)
-    
-    
-    # filter_drinks_by_name = graphene.List(DrinkType,name = graphene.String())
-    # def resolve_filter_drinks_by_name(root,info,name):        
-    #     return DrinkModel.objects.filter(name__istartswith = name)
-    
-    
-    # filter_drinks_by_price = graphene.List(DrinkType,price = graphene.Float())
-    # def resolve_filter_drinks_by_price(root,info,price): 
-    #     return DrinkModel.objects.filter(price__exact = price)
-    
-    # filter_drink = graphene.List(DrinkType,name=graphene.String(),desc=graphene.String(),price=graphene.Float())
-    # def resolve_filter_drink(root,info,name=None,desc=None,price=None):
-    #     if name or desc or price:
+    # filter_drink = graphene.List(DrinkType, name=graphene.String(), desc=graphene.String(), price=graphene.Float(),category = graphene.Int())
 
-    #         return DrinkModel.objects.filter(desc__icontains = desc) | DrinkModel.objects.filter(name__istartswith = name) |DrinkModel.objects.filter(price__exact = price)
-    
-    filter_drink = graphene.List(DrinkType, name=graphene.String(), desc=graphene.String(), price=graphene.Float(),category = graphene.Int())
+    # def resolve_filter_drink(root, info, name=None, desc=None, price=None,category=None):
+    #     drinks = DrinkModel.objects.all()
+    #     user = info.context.user
+    #     if not user.is_authenticated:
+    #         raise Exception("User is not Authenticated")
+    #     if name is not None:
+    #         drinks = drinks.filter(name__istartswith=name)
+    #     if desc is not None:
+    #         drinks = drinks.filter(desc__icontains=desc)
+    #     if price is not None:
+    #         drinks = drinks.filter(price=price)
+    #     if category is not None:
+    #         drinks = drinks.filter(category=category)
 
-    def resolve_filter_drink(root, info, name=None, desc=None, price=None,category=None):
-        drinks = DrinkModel.objects.all()
-        user = info.context.user
-        if not user.is_authenticated:
-            raise Exception("Authentication credentials were not provided")
-        if name is not None:
-            drinks = drinks.filter(name__istartswith=name)
-        if desc is not None:
-            drinks = drinks.filter(desc__icontains=desc)
-        if price is not None:
-            drinks = drinks.filter(price=price)
-        if category is not None:
-            drinks = drinks.filter(category=category)
-
-        return drinks
+        # return drinks
 
     drink = graphene.Field(DrinkType,id=graphene.String())
     def resolve_drink(root,info,id):
         user = info.context.user
         if not user.is_authenticated:
-            raise Exception("Authentication credentials were not provided")
+            raise Exception("User is not Authenticated")
         return DrinkModel.objects.get(id=id)
     
     
@@ -80,7 +81,7 @@ class Query(graphene.ObjectType):
     def resolve_categories(root,info):
         user = info.context.user
         if not user.is_authenticated:
-            raise Exception("Authentication credentials were not provided")
+            raise Exception("User is not Authenticated")
         print(info.operation)
         print(root)
         return CategoryModel.objects.all()
@@ -90,7 +91,7 @@ class Query(graphene.ObjectType):
     def resolve_category(root,info,id):
         user = info.context.user
         if not user.is_authenticated:
-            raise Exception("Authentication credentials were not provided")
+            raise Exception("User is not Authenticated")
         return CategoryModel.objects.get(id=id)
     
     users = graphene.List(UserType)
@@ -117,10 +118,14 @@ class DrinkCreate(graphene.Mutation):
     
     @classmethod
     def mutate(cls,root,info,name,desc,price,category_id):
-        category = CategoryModel.objects.get(id=category_id)
-        drink = DrinkModel.objects.create(name=name,desc=desc,price=price,category=category)
-        drink.save()
-        return DrinkCreate(drink)
+        user = info.context.user
+        if user.is_authenticated:
+            category = CategoryModel.objects.get(id=category_id)
+            drink = DrinkModel.objects.create(name=name,desc=desc,price=price,category=category)
+            drink.save()
+            return DrinkCreate(drink)
+        else:
+            raise Exception("User is not authenticated")
 
 
 class DrinkUpdate(graphene.Mutation):
@@ -133,18 +138,21 @@ class DrinkUpdate(graphene.Mutation):
     drink = graphene.Field(DrinkType)
 
     @classmethod
-    @login_required
     def mutate(cls,root,info,id,name=None,desc=None,price=None):
-        if name is not None:
-            DrinkModel.objects.filter(id=id).update(name=name)
-        if price is not None:
-            DrinkModel.objects.filter(id=id).update(price=price)
-        if desc is not None:
-            DrinkModel.objects.filter(id=id).update(desc=desc)
+        user = info.context.user
+        
+        if user.is_authenticated:
+            if name is not None:
+                DrinkModel.objects.filter(id=id).update(name=name)
+            if price is not None:
+                DrinkModel.objects.filter(id=id).update(price=price)
+            if desc is not None:
+                DrinkModel.objects.filter(id=id).update(desc=desc)
             
-        update_drink = DrinkModel.objects.get(id=id)
-        return DrinkUpdate(update_drink)
-    
+            update_drink = DrinkModel.objects.get(id=id)
+            return DrinkUpdate(update_drink) 
+        else:
+            raise Exception("User is not authenticated")
     
 class DrinkDelete(graphene.Mutation):
     class Arguments:
@@ -154,11 +162,14 @@ class DrinkDelete(graphene.Mutation):
     
     @classmethod
     def mutate(cls,root,info,id):
+        user = info.context.user
         
-        drink = DrinkModel.objects.get(id=id)
-        drink.delete()
-        return DrinkDelete(message = "Drink delelted successfully")
-
+        if user.is_authenticated:
+            drink = DrinkModel.objects.get(id=id)
+            drink.delete()
+            return DrinkDelete(message = "Drink delelted successfully")
+        else:
+            raise Exception("User is not authenticated")
 
 
 class CreateUser(graphene.Mutation):
