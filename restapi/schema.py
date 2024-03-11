@@ -16,7 +16,7 @@ class DrinkType(DjangoObjectType):
         filter_fields = {
             'name': ['exact', 'icontains', 'istartswith'],
             'desc': ['exact', 'icontains', 'istartswith'],
-            'price':['exact','gte']
+            'price':['exact','gte','lte'],
         }
         interfaces = (relay.Node,)
         
