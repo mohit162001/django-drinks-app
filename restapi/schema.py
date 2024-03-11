@@ -16,7 +16,7 @@ class DrinkType(DjangoObjectType):
         filter_fields = {
             'name': ['exact', 'icontains', 'istartswith'],
             'desc': ['exact', 'icontains', 'istartswith'],
-            'price':['exact']
+            'price':['exact','gte']
         }
         interfaces = (relay.Node,)
         
@@ -33,6 +33,10 @@ class CategoryType(DjangoObjectType):
     class Meta:
         model = CategoryModel
         fields = '__all__'
+        filter_fields = {
+            'name':['exact','istartswith','icontains']
+        }
+        interfaces = (relay.Node,)
 
 class UserType(DjangoObjectType):
     class Meta:
@@ -77,13 +81,11 @@ class Query(graphene.ObjectType):
         return DrinkModel.objects.get(id=id)
     
     
-    categories = graphene.List(CategoryType)
-    def resolve_categories(root,info):
+    categories = DjangoFilterConnectionField(CategoryType)
+    def resolve_categories(root,info,**lwargs):
         user = info.context.user
         if not user.is_authenticated:
             raise Exception("User is not Authenticated")
-        print(info.operation)
-        print(root)
         return CategoryModel.objects.all()
     
     
